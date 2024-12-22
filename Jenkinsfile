@@ -2,7 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'syedssaad/myapp:latest'
+        DOCKER_CREDENTIALS_ID = 'dockerhub-credentials' // Replace with your actual credentials ID
+        DOCKER_IMAGE = 'syedssaad/myapp:latest' // Replace with your Docker Hub username and image name
     }
 
     stages {
@@ -37,7 +38,7 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 // Push Docker image to Docker Hub
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'syedssaad', passwordVariable: 'Saad@1234')]) {
+                withCredentials([usernamePassword(credentialsId: env.DOCKER_CREDENTIALS_ID, usernameVariable: 'syedssaad', passwordVariable: 'Saad@1234')]) {
                     bat 'echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin'
                     bat 'docker push %DOCKER_IMAGE%'
                 }

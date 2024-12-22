@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_CREDENTIALS_ID = 'dockerhub-credentials' // Replace with your actual credentials ID
-        DOCKER_IMAGE = 'syedssaad/myapp:latest' // Replace with your Docker Hub username and image name
+        DOCKER_CREDENTIALS_ID = 'dockerhub-credentials'  // ID of your Jenkins Docker credentials
+        DOCKER_IMAGE = 'syedssaad/myapp:latest'  // Replace with your Docker Hub username and image name
     }
 
     stages {
@@ -31,16 +31,16 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 // Build Docker image
-                bat 'docker build -t %DOCKER_IMAGE% .'
+                bat "docker build -t %DOCKER_IMAGE% ."
             }
         }
 
         stage('Push Docker Image') {
             steps {
-                // Push Docker image to Docker Hub
-                withCredentials([usernamePassword(credentialsId: env.DOCKER_CREDENTIALS_ID, usernameVariable: 'syedssaad', passwordVariable: 'Saad@1234')]) {
-                    bat 'echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin'
-                    bat 'docker push %DOCKER_IMAGE%'
+                // Use Jenkins credentials for Docker login and push the image
+                withCredentials([usernamePassword(credentialsId: env.DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    bat "echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin"
+                    bat "docker push %DOCKER_IMAGE%"
                 }
             }
         }

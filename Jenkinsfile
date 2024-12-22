@@ -39,8 +39,8 @@ pipeline {
             steps {
                 // Use Jenkins credentials for Docker login and push the image
                 withCredentials([usernamePassword(credentialsId: env.DOCKER_CREDENTIALS_ID, usernameVariable: 'syedssaad', passwordVariable: 'Saad@1234')]) {
-                    bat "echo "Saad@1234" | docker login -u syedssaad --password-stdin
-"
+                    // Directly pass the password to Docker login
+                    bat "echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin"
                     bat "docker push %DOCKER_IMAGE%"
                 }
             }

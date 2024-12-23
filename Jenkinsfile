@@ -41,13 +41,15 @@ pipeline {
             // Replace with your actual credentials ID in Jenkins
             withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                 // Use the credentials to login non-interactively
-                sh '''
-                echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-                '''
+                bat """
+                echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
+                docker push syedssaad/myapp:latest
+                """
             }
         }
     }
 }
+
 
 
         stage('Deploy to Kubernetes') {

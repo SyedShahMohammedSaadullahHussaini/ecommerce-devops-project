@@ -35,12 +35,10 @@ pipeline {
             }
         }
 
-       stage('Push Docker Image') {
+     stage('Push Docker Image') {
     steps {
         script {
-            // Replace with your actual credentials ID in Jenkins
             withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                // Use the credentials to login non-interactively
                 bat """
                 echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
                 docker push syedssaad/myapp:latest
@@ -49,6 +47,7 @@ pipeline {
         }
     }
 }
+
 
 
 

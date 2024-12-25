@@ -3,8 +3,7 @@ pipeline {
 
     environment {
         DOCKER_CREDENTIALS_ID = 'dockerhub-credentials'  // ID of your Jenkins Docker credentials
-        DOCKER_IMAGE = 'syedssaad/myapp:latest'  // Replace with your Docker Hub username and image name
-        KUBECONFIG = 'C:/Users/saad/.kube/config' // Path to your kubeconfig (ensure it's set correctly on Jenkins)
+        DOCKER_IMAGE = 'syedssaad/myapp:latest'          // Replace with your Docker Hub username and image name
     }
 
     stages {
@@ -45,18 +44,6 @@ pipeline {
                         docker push %DOCKER_IMAGE%
                         """
                     }
-                }
-            }
-        }
-
-        stage('Deploy to Kubernetes') {
-            steps {
-                script {
-                    // Deploy the application to Kubernetes using the KUBECONFIG environment variable
-                    bat """
-                    kubectl --kubeconfig=%KUBECONFIG% apply -f k8s/deployment.yaml --validate=false
-                    kubectl --kubeconfig=%KUBECONFIG% apply -f k8s/service.yaml --validate=false
-                    """
                 }
             }
         }

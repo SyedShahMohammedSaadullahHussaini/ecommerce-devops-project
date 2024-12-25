@@ -4,6 +4,7 @@ pipeline {
     environment {
         DOCKER_CREDENTIALS_ID = 'dockerhub-credentials'  // ID of your Jenkins Docker credentials
         DOCKER_IMAGE = 'syedssaad/myapp:latest'          // Replace with your Docker Hub username and image name
+        KUBE_CONFIG = '/path/to/kube/config'             // Kubernetes config file (if needed)
     }
 
     stages {
@@ -22,9 +23,19 @@ pipeline {
         }
 
         stage('Test') {
-            steps {
-                // Run automated tests
-                bat 'mvn test'
+            parallel {
+                stage('Unit Tests') {
+                    steps {
+                        // Run unit tests
+                        bat 'mvn test -Dtest=UnitTests'
+                    }
+                }
+                stage('Integration Tests') {
+                    steps {
+                        // Run integration tests
+                        bat 'mvn test -Dtest=IntegrationTests'
+                    }
+                }
             }
         }
 
@@ -32,6 +43,13 @@ pipeline {
             steps {
                 // Build Docker image
                 bat "docker build -t %DOCKER_IMAGE% ."
+            }
+        }
+
+        stage('Scan Docker Image') {
+            steps {
+                // Scan the Docker image for vulnerabilities using Trivy
+                bat 'trivy image %DOCKER_IMAGE%'
             }
         }
 
@@ -47,12 +65,31 @@ pipeline {
                 }
             }
         }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    // Deploy the application using kubectl or similar deployment tool
+                    bat "kubectl --kubeconfig=%KUBE_CONFIG% apply -f deployment.yaml"
+                }
+            }
+        }
     }
 
     post {
         always {
             // Clean up workspace
             cleanWs()
+        }
+
+        success {
+            // Send success notification (optional, e.g., via Slack)
+            slackSend(channel: '#deployments', message: "Build ${env.BUILD_TAG} succeeded!")
+        }
+
+        failure {
+            // Send failure notification (optional, e.g., via Slack)
+            slackSend(channel: '#deployments', message: "Build ${env.BUILD_TAG} failed!")
         }
     }
 }

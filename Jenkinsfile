@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKER_CREDENTIALS_ID = 'dockerhub-credentials'  // ID of your Jenkins Docker credentials
         DOCKER_IMAGE = 'syedssaad/myapp:latest'          // Replace with your Docker Hub username and image name
-        KUBE_CONFIG = 'C:\Users\saad\.kube\config'             // Kubernetes config file (if needed)
+        KUBE_CONFIG = 'C:Users\saad\.kube\config'             // Kubernetes config file (if needed)
     }
 
     stages {
